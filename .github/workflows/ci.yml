@@ -46,13 +46,14 @@ jobs:
       #          path: build/app/outputs/bundle/release/app-release.aab
       - name: Distribute to testers
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
-          head -c 40 /tmp/sa.json
+          cat > /tmp/sa.json <<'JSON'
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          JSON
+          wc -c /tmp/sa.json
           npm install -g firebase-tools
           firebase appdistribution:distribute \
             build/app/outputs/flutter-apk/app-release.apk \
             --app ${{ secrets.FIREBASE_APP_ID }} \
-            --groups testers \
-            --debug
+            --groups testers
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json
